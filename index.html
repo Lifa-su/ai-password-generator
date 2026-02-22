@@ -77,6 +77,41 @@ footer{text-align:center;padding:20px;color:var(--text2);font-size:.8rem;border-
 .passphrase-opts{display:none}.passphrase-opts.active{display:block}
 .password-opts{display:block}.password-opts.hide{display:none}
 .history-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+
+/* Pro Section */
+.pro-section{margin-top:8px}
+.pro-title{font-size:1.2rem;font-weight:700;margin-bottom:16px;display:flex;align-items:center;gap:10px}
+.pro-badge{font-size:.65rem;padding:3px 10px;border-radius:20px;background:linear-gradient(135deg,#f59e0b,#ef4444);color:#fff;font-weight:700;letter-spacing:.5px;text-transform:uppercase}
+.pro-cards{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:600px){.pro-cards{grid-template-columns:1fr}}
+.pro-card{position:relative;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;cursor:pointer;transition:all .2s;min-height:220px}
+.pro-card:hover{border-color:var(--accent);transform:translateY(-2px);box-shadow:0 8px 30px rgba(124,92,252,.15)}
+.pro-card-inner{padding:20px}
+.pro-card-label{font-size:.95rem;font-weight:600;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.pro-mock{opacity:.7}
+.pro-mock-row{display:flex;align-items:center;gap:8px;margin-bottom:8px;font-size:.8rem;color:var(--text2)}
+.pro-mock-bar{height:8px;border-radius:4px;background:var(--surface2);flex:1;overflow:hidden}
+.pro-mock-fill{height:100%;border-radius:4px}
+.pro-mock-tag{font-size:.7rem;padding:2px 8px;border-radius:4px;background:var(--surface2);color:var(--text2);display:inline-block;margin:2px}
+.pro-mock-result{display:flex;align-items:center;gap:6px;padding:8px 12px;background:var(--surface2);border-radius:8px;font-size:.8rem;color:var(--text2);margin-bottom:6px}
+.pro-mock-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.pro-overlay{position:absolute;inset:0;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);background:rgba(10,10,15,.5);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:8px;z-index:2}
+.pro-lock{font-size:2rem;opacity:.8}
+.pro-lock-text{font-size:.8rem;color:var(--text2);font-weight:500}
+
+/* Upgrade Modal */
+.upgrade-modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);z-index:1000;display:none;align-items:center;justify-content:center;padding:20px}
+.upgrade-modal-bg.show{display:flex}
+.upgrade-modal{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:32px;max-width:420px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.5);text-align:center}
+.upgrade-modal h3{font-size:1.3rem;font-weight:700;margin-bottom:8px}
+.upgrade-modal .price{font-size:2rem;font-weight:700;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin:12px 0}
+.upgrade-features{text-align:left;margin:20px 0;display:flex;flex-direction:column;gap:10px}
+.upgrade-feature{display:flex;align-items:flex-start;gap:10px;font-size:.9rem;color:var(--text2);line-height:1.4}
+.upgrade-feature span:first-child{flex-shrink:0}
+.btn-upgrade{width:100%;padding:14px;border:none;border-radius:var(--radius);background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;font-weight:700;font-size:1rem;cursor:pointer;transition:all .2s;font-family:inherit;display:block;text-align:center;text-decoration:none;margin-top:8px}
+.btn-upgrade:hover{opacity:.9;transform:translateY(-1px);box-shadow:0 4px 20px rgba(124,92,252,.4)}
+.btn-later{background:none;border:none;color:var(--text2);font-size:.85rem;cursor:pointer;margin-top:14px;font-family:inherit;padding:8px;transition:color .2s}
+.btn-later:hover{color:var(--text)}
 </style>
 </head>
 
@@ -379,7 +414,75 @@ function clearHistory(){
 
 renderHistory();
 generate();
+
+// Pro upgrade modal
+function showUpgradeModal(){
+  document.getElementById('upgradeModal').classList.add('show');
+  document.body.style.overflow='hidden';
+}
+function hideUpgradeModal(e){
+  if(e && e.target!==e.currentTarget) return;
+  document.getElementById('upgradeModal').classList.remove('show');
+  document.body.style.overflow='';
+}
+document.addEventListener('keydown',function(e){
+  if(e.key==='Escape') hideUpgradeModal();
+});
 </script>
+<!-- Pro Features Section -->
+<div class="pro-section" style="max-width:900px;margin:0 auto;padding:0 20px 40px">
+<div class="pro-title">🚀 Advanced Tools <span class="pro-badge">PRO</span></div>
+<div class="pro-cards">
+<div class="pro-card" onclick="showUpgradeModal()">
+<div class="pro-card-inner">
+<div class="pro-card-label">🔍 Password Strength Audit</div>
+<div class="pro-mock">
+<div class="pro-mock-row"><span>Overall Score</span><div class="pro-mock-bar"><div class="pro-mock-fill" style="width:72%;background:linear-gradient(90deg,var(--warn),var(--success))"></div></div><span>72/100</span></div>
+<div class="pro-mock-row"><span>Brute Force</span><div class="pro-mock-bar"><div class="pro-mock-fill" style="width:85%;background:var(--success)"></div></div><span>3.2 yrs</span></div>
+<div class="pro-mock-row"><span>Dictionary</span><div class="pro-mock-bar"><div class="pro-mock-fill" style="width:40%;background:var(--warn)"></div></div><span>Medium</span></div>
+<div style="margin-top:10px">
+<span class="pro-mock-tag">⚠️ Common pattern</span>
+<span class="pro-mock-tag">✓ Good length</span>
+<span class="pro-mock-tag">⚠️ Keyboard walk</span>
+<span class="pro-mock-tag">✓ Mixed case</span>
+</div>
+</div>
+</div>
+<div class="pro-overlay"><span class="pro-lock">🔒</span><span class="pro-lock-text">Unlock with Pro</span></div>
+</div>
+<div class="pro-card" onclick="showUpgradeModal()">
+<div class="pro-card-inner">
+<div class="pro-card-label">🛡️ Breach Check</div>
+<div class="pro-mock">
+<div class="pro-mock-result"><div class="pro-mock-dot" style="background:var(--success)"></div>myS3cur3Pass! — No breaches found</div>
+<div class="pro-mock-result"><div class="pro-mock-dot" style="background:var(--danger)"></div>password123 — Found in 12,483 breaches</div>
+<div class="pro-mock-result"><div class="pro-mock-dot" style="background:var(--warn)"></div>Welcome2024 — Found in 3 breaches</div>
+<div style="margin-top:10px;font-size:.75rem;color:var(--text2);display:flex;align-items:center;gap:6px">
+<span>🔗</span> Powered by Have I Been Pwned API
+</div>
+</div>
+</div>
+<div class="pro-overlay"><span class="pro-lock">🔒</span><span class="pro-lock-text">Unlock with Pro</span></div>
+</div>
+</div>
+</div>
+
+<!-- Upgrade Modal -->
+<div class="upgrade-modal-bg" id="upgradeModal" onclick="hideUpgradeModal(event)">
+<div class="upgrade-modal" onclick="event.stopPropagation()">
+<h3>Upgrade to Pro</h3>
+<div class="price">$9</div>
+<p style="color:var(--text2);font-size:.9rem">One-time payment. Lifetime access.</p>
+<div class="upgrade-features">
+<div class="upgrade-feature"><span>🔍</span><span>Password Strength Audit — deep analysis with pattern detection, dictionary attack risk, and brute force time estimation</span></div>
+<div class="upgrade-feature"><span>🛡️</span><span>Breach Check — verify if your passwords appeared in known data breaches (Have I Been Pwned integration)</span></div>
+<div class="upgrade-feature"><span>🔄</span><span>Lifetime updates — all future Pro features included</span></div>
+</div>
+<a href="https://feifeicch.gumroad.com/ai-password-generator" target="_blank" class="btn-upgrade">Upgrade to Pro — $9</a>
+<button class="btn-later" onclick="hideUpgradeModal()">Maybe later</button>
+</div>
+</div>
+
 <!-- MONETIZE:START -->
 <script src="monetize.js"></script>
 <!-- MONETIZE:END -->
