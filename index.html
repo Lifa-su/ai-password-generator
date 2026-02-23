@@ -1,490 +1,166 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>AI Password Generator</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<meta name="description" content="Free online password generator. Create strong, secure passwords instantly.">
 <style>
-*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
-:root{
---bg:#0a0a0f;--surface:#14141f;--surface2:#1e1e2e;--border:#2a2a3e;
---text:#e4e4ef;--text2:#9494a8;--accent:#7c5cfc;--accent2:#5c8cfc;
---success:#4cda8a;--warn:#fcb44c;--danger:#fc5c6c;
---radius:12px;--shadow:0 4px 24px rgba(0,0,0,0.3);
-}
-body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;line-height:1.6}
-header{position:sticky;top:0;z-index:100;background:rgba(10,10,15,0.8);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:16px 0}
-.header-inner{max-width:900px;margin:0 auto;padding:0 20px;display:flex;align-items:center;justify-content:space-between}
-.logo{display:flex;align-items:center;gap:10px;font-size:1.25rem;font-weight:700}
-.logo svg{width:28px;height:28px}
-.badge{font-size:.7rem;padding:2px 8px;border-radius:20px;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;font-weight:600}
-main{max-width:900px;margin:0 auto;padding:24px 20px 80px}
-.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:24px;margin-bottom:20px;box-shadow:var(--shadow)}
-.card-title{font-size:1.1rem;font-weight:600;margin-bottom:16px;display:flex;align-items:center;gap:8px}
-.mode-tabs{display:flex;gap:8px;margin-bottom:20px}
-.mode-tab{flex:1;padding:12px;border:1px solid var(--border);border-radius:var(--radius);background:var(--surface2);color:var(--text2);cursor:pointer;text-align:center;font-weight:500;font-size:.9rem;transition:all .2s;font-family:inherit}
-.mode-tab.active{border-color:var(--accent);color:var(--text);background:rgba(124,92,252,.1)}
-.mode-tab:hover{border-color:var(--accent);color:var(--text)}
-.pw-display{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:16px 20px;font-family:'JetBrains Mono','Fira Code',monospace;font-size:1.15rem;word-break:break-all;min-height:60px;display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px}
-.pw-text{flex:1;user-select:all;letter-spacing:.5px}
-.pw-actions{display:flex;gap:8px;flex-shrink:0}
-.icon-btn{width:40px;height:40px;border:1px solid var(--border);border-radius:8px;background:var(--surface);color:var(--text2);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s}
-.icon-btn:hover{border-color:var(--accent);color:var(--accent);background:rgba(124,92,252,.1)}
-.icon-btn.copied{border-color:var(--success);color:var(--success);background:rgba(76,218,138,.1)}
-.btn{padding:12px 24px;border:none;border-radius:var(--radius);background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;font-weight:600;font-size:.95rem;cursor:pointer;transition:all .2s;font-family:inherit;display:inline-flex;align-items:center;gap:8px}
-.btn:hover{opacity:.9;transform:translateY(-1px);box-shadow:0 4px 20px rgba(124,92,252,.4)}
-.btn:active{transform:translateY(0)}
-.btn-block{width:100%;justify-content:center}
-.btn-outline{background:transparent;border:1px solid var(--border);color:var(--text2)}
-.btn-outline:hover{border-color:var(--accent);color:var(--accent);box-shadow:none;background:rgba(124,92,252,.05)}
-.btn-sm{padding:8px 16px;font-size:.85rem}
-.btn-danger{background:linear-gradient(135deg,var(--danger),#e04050)}
-.strength-bar{height:6px;border-radius:3px;background:var(--surface2);overflow:hidden;margin-bottom:8px}
-.strength-fill{height:100%;border-radius:3px;transition:all .4s ease}
-.strength-info{display:flex;justify-content:space-between;align-items:center;font-size:.85rem;color:var(--text2)}
-.entropy-badge{font-family:'JetBrains Mono',monospace;font-size:.8rem;padding:2px 8px;border-radius:6px;background:var(--surface2);border:1px solid var(--border)}
-.options-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-@media(max-width:600px){.options-grid{grid-template-columns:1fr}}
-.option-item{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--surface2);border:1px solid var(--border);border-radius:8px}
-.option-label{font-size:.9rem;color:var(--text2)}
-.toggle{position:relative;width:44px;height:24px;flex-shrink:0}
-.toggle input{opacity:0;width:0;height:0}
-.toggle-slider{position:absolute;inset:0;background:var(--surface);border:1px solid var(--border);border-radius:12px;cursor:pointer;transition:.2s}
-.toggle-slider::before{content:'';position:absolute;width:18px;height:18px;left:2px;top:2px;background:var(--text2);border-radius:50%;transition:.2s}
-.toggle input:checked+.toggle-slider{background:rgba(124,92,252,.3);border-color:var(--accent)}
-.toggle input:checked+.toggle-slider::before{transform:translateX(20px);background:var(--accent)}
-.slider-row{display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;grid-column:1/-1}
-.slider-row label{font-size:.9rem;color:var(--text2);white-space:nowrap}
-.slider-row input[type=range]{flex:1;-webkit-appearance:none;height:6px;border-radius:3px;background:var(--border);outline:none}
-.slider-row input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));cursor:pointer;border:2px solid var(--surface)}
-.slider-val{font-family:'JetBrains Mono',monospace;font-size:.9rem;min-width:36px;text-align:center;color:var(--accent)}
-.sep-options{display:flex;gap:6px;flex-wrap:wrap}
-.sep-btn{padding:6px 12px;border:1px solid var(--border);border-radius:6px;background:var(--surface);color:var(--text2);cursor:pointer;font-family:'JetBrains Mono',monospace;font-size:.85rem;transition:all .2s}
-.sep-btn.active{border-color:var(--accent);color:var(--accent);background:rgba(124,92,252,.1)}
-.sep-btn:hover{border-color:var(--accent);color:var(--accent)}
-.history-list{max-height:300px;overflow-y:auto}
-.history-item{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:1px solid var(--border);gap:12px}
-.history-item:last-child{border-bottom:none}
-.history-pw{font-family:'JetBrains Mono',monospace;font-size:.85rem;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.history-meta{font-size:.75rem;color:var(--text2);white-space:nowrap}
-.history-actions{display:flex;gap:4px}
-.empty-state{text-align:center;padding:32px;color:var(--text2);font-size:.9rem}
-.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(100px);background:var(--surface);border:1px solid var(--success);color:var(--success);padding:12px 24px;border-radius:var(--radius);font-size:.9rem;font-weight:500;z-index:1000;transition:transform .3s ease;box-shadow:var(--shadow)}
-.toast.show{transform:translateX(-50%) translateY(0)}
-footer{text-align:center;padding:20px;color:var(--text2);font-size:.8rem;border-top:1px solid var(--border);margin-top:20px}
-.passphrase-opts{display:none}.passphrase-opts.active{display:block}
-.password-opts{display:block}.password-opts.hide{display:none}
-.history-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
-
-/* Pro Section */
-.pro-section{margin-top:8px}
-.pro-title{font-size:1.2rem;font-weight:700;margin-bottom:16px;display:flex;align-items:center;gap:10px}
-.pro-badge{font-size:.65rem;padding:3px 10px;border-radius:20px;background:linear-gradient(135deg,#f59e0b,#ef4444);color:#fff;font-weight:700;letter-spacing:.5px;text-transform:uppercase}
-.pro-cards{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-@media(max-width:600px){.pro-cards{grid-template-columns:1fr}}
-.pro-card{position:relative;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;cursor:pointer;transition:all .2s;min-height:220px}
-.pro-card:hover{border-color:var(--accent);transform:translateY(-2px);box-shadow:0 8px 30px rgba(124,92,252,.15)}
-.pro-card-inner{padding:20px}
-.pro-card-label{font-size:.95rem;font-weight:600;margin-bottom:12px;display:flex;align-items:center;gap:8px}
-.pro-mock{opacity:.7}
-.pro-mock-row{display:flex;align-items:center;gap:8px;margin-bottom:8px;font-size:.8rem;color:var(--text2)}
-.pro-mock-bar{height:8px;border-radius:4px;background:var(--surface2);flex:1;overflow:hidden}
-.pro-mock-fill{height:100%;border-radius:4px}
-.pro-mock-tag{font-size:.7rem;padding:2px 8px;border-radius:4px;background:var(--surface2);color:var(--text2);display:inline-block;margin:2px}
-.pro-mock-result{display:flex;align-items:center;gap:6px;padding:8px 12px;background:var(--surface2);border-radius:8px;font-size:.8rem;color:var(--text2);margin-bottom:6px}
-.pro-mock-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
-.pro-overlay{position:absolute;inset:0;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);background:rgba(10,10,15,.5);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:8px;z-index:2}
-.pro-lock{font-size:2rem;opacity:.8}
-.pro-lock-text{font-size:.8rem;color:var(--text2);font-weight:500}
-
-/* Upgrade Modal */
-.upgrade-modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);z-index:1000;display:none;align-items:center;justify-content:center;padding:20px}
-.upgrade-modal-bg.show{display:flex}
-.upgrade-modal{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:32px;max-width:420px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.5);text-align:center}
-.upgrade-modal h3{font-size:1.3rem;font-weight:700;margin-bottom:8px}
-.upgrade-modal .price{font-size:2rem;font-weight:700;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin:12px 0}
-.upgrade-features{text-align:left;margin:20px 0;display:flex;flex-direction:column;gap:10px}
-.upgrade-feature{display:flex;align-items:flex-start;gap:10px;font-size:.9rem;color:var(--text2);line-height:1.4}
-.upgrade-feature span:first-child{flex-shrink:0}
-.btn-upgrade{width:100%;padding:14px;border:none;border-radius:var(--radius);background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;font-weight:700;font-size:1rem;cursor:pointer;transition:all .2s;font-family:inherit;display:block;text-align:center;text-decoration:none;margin-top:8px}
-.btn-upgrade:hover{opacity:.9;transform:translateY(-1px);box-shadow:0 4px 20px rgba(124,92,252,.4)}
-.btn-later{background:none;border:none;color:var(--text2);font-size:.85rem;cursor:pointer;margin-top:14px;font-family:inherit;padding:8px;transition:color .2s}
-.btn-later:hover{color:var(--text)}
-</style>
-</head>
-
-.sep-btn{padding:6px 12px;border:1px solid var(--border);border-radius:6px;background:var(--surface);color:var(--text2);cursor:pointer;font-family:'JetBrains Mono',monospace;font-size:.85rem;transition:all .2s}
-.sep-btn.active{border-color:var(--accent);color:var(--accent);background:rgba(124,92,252,.1)}
-.sep-btn:hover{border-color:var(--accent);color:var(--accent)}
-.history-list{max-height:300px;overflow-y:auto}
-.history-item{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:1px solid var(--border);gap:12px}
-.history-item:last-child{border-bottom:none}
-.history-pw{font-family:'JetBrains Mono',monospace;font-size:.85rem;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.history-meta{font-size:.75rem;color:var(--text2);white-space:nowrap}
-.history-actions{display:flex;gap:4px}
-.empty-state{text-align:center;padding:32px;color:var(--text2);font-size:.9rem}
-.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(100px);background:var(--surface);border:1px solid var(--success);color:var(--success);padding:12px 24px;border-radius:var(--radius);font-size:.9rem;font-weight:500;z-index:1000;transition:transform .3s ease;box-shadow:var(--shadow)}
-.toast.show{transform:translateX(-50%) translateY(0)}
-footer{text-align:center;padding:20px;color:var(--text2);font-size:.8rem;border-top:1px solid var(--border);margin-top:20px}
-.passphrase-opts{display:none}.passphrase-opts.active{display:block}
-.password-opts{display:block}.password-opts.hide{display:none}
-.history-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
-.icon-btn-sm{width:32px;height:32px;border:1px solid var(--border);border-radius:6px;background:var(--surface);color:var(--text2);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;font-size:.8rem}
-.icon-btn-sm:hover{border-color:var(--accent);color:var(--accent)}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#1a1a2e;color:#e0e0e0;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:20px}
+h1{font-size:1.8rem;margin:20px 0 8px;background:linear-gradient(135deg,#00d2ff,#7b2ff7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-align:center}
+.subtitle{color:#888;margin-bottom:24px;font-size:.95rem;text-align:center}
+.container{width:100%;max-width:600px}
+.card{background:#16213e;border-radius:12px;padding:24px;margin-bottom:16px;border:1px solid #0f3460}
+label{display:block;font-size:.9rem;color:#aaa;margin-bottom:8px}
+.row{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+.row input[type=range]{flex:1;accent-color:#7b2ff7;height:6px}
+.row input[type=number]{width:72px;background:#0f3460;border:1px solid #1a1a4e;color:#fff;border-radius:8px;padding:8px;text-align:center;font-size:1rem}
+.row input[type=number]:focus{outline:none;border-color:#7b2ff7}
+.toggles{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.toggle{display:flex;align-items:center;gap:10px;background:#0f3460;padding:10px 14px;border-radius:8px;cursor:pointer;user-select:none;transition:background .2s}
+.toggle:hover{background:#1a1a4e}
+.toggle input{display:none}
+.toggle .sw{width:40px;height:22px;background:#333;border-radius:11px;position:relative;transition:background .3s;flex-shrink:0}
+.toggle .sw::after{content:'';position:absolute;top:3px;left:3px;width:16px;height:16px;background:#888;border-radius:50%;transition:all .3s}
+.toggle input:checked+.sw{background:#7b2ff7}
+.toggle input:checked+.sw::after{left:21px;background:#fff}
+.strength-bar{height:6px;border-radius:3px;background:#333;margin-top:8px;overflow:hidden}
+.strength-fill{height:100%;border-radius:3px;transition:width .4s,background .4s}
+.strength-text{font-size:.85rem;margin-top:6px}
+.btn{background:linear-gradient(135deg,#7b2ff7,#00d2ff);color:#fff;border:none;padding:12px 24px;border-radius:8px;font-size:1rem;cursor:pointer;width:100%;font-weight:600;transition:opacity .2s}
+.btn:hover{opacity:.9}
+.btn:active{transform:scale(.98)}
+.btn-sm{background:#0f3460;padding:8px 14px;border-radius:6px;font-size:.8rem;width:auto;border:1px solid #1a1a4e;font-weight:400;cursor:pointer;color:#e0e0e0}
+.btn-sm:hover{background:#1a1a4e}
+.btn-copy-all{margin-top:12px;background:linear-gradient(135deg,#00d2ff,#7b2ff7)}
+.passwords{margin-top:12px}
+.pw-item{display:flex;align-items:center;gap:8px;background:#0f3460;padding:10px 14px;border-radius:8px;margin-bottom:8px;word-break:break-all}
+.pw-item code{flex:1;font-family:'SF Mono',Monaco,Consolas,monospace;font-size:.95rem;color:#00d2ff}
+.toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:#7b2ff7;color:#fff;padding:10px 24px;border-radius:8px;font-size:.9rem;opacity:0;transition:opacity .3s;pointer-events:none;z-index:999}
+.toast.show{opacity:1}
+footer{margin-top:auto;padding:20px 0 10px;color:#555;font-size:.8rem;text-align:center}
+footer a{color:#7b2ff7;text-decoration:none}
+@media(max-width:480px){h1{font-size:1.4rem}.card{padding:16px}.toggles{grid-template-columns:1fr}.row input[type=number]{width:60px}}
 </style>
 </head>
 <body>
-<header>
-<div class="header-inner">
-<div class="logo">
-<svg viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
-<rect width="28" height="28" rx="8" fill="url(#g1)"/>
-<path d="M14 7a5 5 0 00-5 5v2a2 2 0 00-2 2v5a2 2 0 002 2h10a2 2 0 002-2v-5a2 2 0 00-2-2v-2a5 5 0 00-5-5zm-3 5a3 3 0 116 0v2h-6v-2zm4 7a1 1 0 11-2 0v-2a1 1 0 112 0v2z" fill="#fff"/>
-<defs><linearGradient id="g1" x1="0" y1="0" x2="28" y2="28"><stop stop-color="#7c5cfc"/><stop offset="1" stop-color="#5c8cfc"/></linearGradient></defs>
-</svg>
-PassForge
-<span class="badge">AI</span>
-</div>
-</div>
-</header>
-<main>
+<div class="container">
+<h1>&#128272; AI Password Generator</h1>
+<p class="subtitle">Generate strong, secure passwords instantly</p>
 <div class="card">
-<div class="mode-tabs">
-<button class="mode-tab active" onclick="setMode('password')" id="tabPassword">&#x1f512; Random Password</button>
-<button class="mode-tab" onclick="setMode('passphrase')" id="tabPassphrase">&#x1f4dd; Passphrase</button>
+<label>Password Length: <strong id="lenVal">16</strong></label>
+<div class="row"><input type="range" id="lenRange" min="8" max="128" value="16"><input type="number" id="lenNum" min="8" max="128" value="16"></div>
+<label>Character Types</label>
+<div class="toggles">
+<label class="toggle"><input type="checkbox" id="upper" checked><span class="sw"></span>Uppercase (A-Z)</label>
+<label class="toggle"><input type="checkbox" id="lower" checked><span class="sw"></span>Lowercase (a-z)</label>
+<label class="toggle"><input type="checkbox" id="digits" checked><span class="sw"></span>Digits (0-9)</label>
+<label class="toggle"><input type="checkbox" id="symbols" checked><span class="sw"></span>Symbols (!@#$)</label>
 </div>
-<div class="pw-display">
-<span class="pw-text" id="pwText">Click Generate to create a password</span>
-<div class="pw-actions">
-<button class="icon-btn" onclick="copyPassword()" title="Copy" id="copyBtn">&#x1f4cb;</button>
-<button class="icon-btn" onclick="generate()" title="Regenerate">&#x1f504;</button>
-</div>
-</div>
-<div class="strength-bar"><div class="strength-fill" id="strengthFill" style="width:0"></div></div>
-<div class="strength-info">
-<span id="strengthLabel">Generate a password to check strength</span>
-<span class="entropy-badge" id="entropyBadge">0 bits</span>
-</div>
+<label>Strength</label>
+<div class="strength-bar"><div class="strength-fill" id="strengthFill"></div></div>
+<div class="strength-text" id="strengthText">—</div>
 </div>
 <div class="card">
-<div class="card-title">&#x2699;&#xfe0f; Options</div>
-<div class="password-opts" id="passwordOpts">
-<div class="options-grid">
-<div class="slider-row">
-<label for="lengthSlider">Length</label>
-<input type="range" id="lengthSlider" min="8" max="128" value="16" oninput="updateLength(this.value)">
-<span class="slider-val" id="lengthVal">16</span>
-</div>
-<div class="option-item">
-<span class="option-label">Uppercase (A-Z)</span>
-<label class="toggle"><input type="checkbox" id="optUpper" checked onchange="generate()"><span class="toggle-slider"></span></label>
-</div>
-<div class="option-item">
-<span class="option-label">Lowercase (a-z)</span>
-<label class="toggle"><input type="checkbox" id="optLower" checked onchange="generate()"><span class="toggle-slider"></span></label>
-</div>
-<div class="option-item">
-<span class="option-label">Numbers (0-9)</span>
-<label class="toggle"><input type="checkbox" id="optNumbers" checked onchange="generate()"><span class="toggle-slider"></span></label>
-</div>
-<div class="option-item">
-<span class="option-label">Symbols (!@#$...)</span>
-<label class="toggle"><input type="checkbox" id="optSymbols" checked onchange="generate()"><span class="toggle-slider"></span></label>
-</div>
-<div class="option-item" style="grid-column:1/-1">
-<span class="option-label">Exclude Similar (i,l,1,L,o,0,O)</span>
-<label class="toggle"><input type="checkbox" id="optExclude" onchange="generate()"><span class="toggle-slider"></span></label>
+<label>Batch Count</label>
+<div class="row"><input type="range" id="countRange" min="1" max="50" value="1"><input type="number" id="countNum" min="1" max="50" value="1"></div>
+<button class="btn" id="genBtn">&#9889; Generate Passwords</button>
+<div class="passwords" id="passwords"></div>
+<button class="btn btn-copy-all" id="copyAllBtn" style="display:none">&#128203; Copy All</button>
 </div>
 </div>
-</div>
-<div class="passphrase-opts" id="passphraseOpts">
-<div class="options-grid">
-<div class="slider-row">
-<label for="wordSlider">Words</label>
-<input type="range" id="wordSlider" min="3" max="10" value="4" oninput="updateWords(this.value)">
-<span class="slider-val" id="wordVal">4</span>
-</div>
-<div class="option-item" style="grid-column:1/-1">
-<span class="option-label">Separator</span>
-<div class="sep-options" id="sepOptions">
-<button class="sep-btn active" data-sep="-" onclick="setSep(this)">-</button>
-<button class="sep-btn" data-sep="." onclick="setSep(this)">.</button>
-<button class="sep-btn" data-sep="_" onclick="setSep(this)">_</button>
-<button class="sep-btn" data-sep=" " onclick="setSep(this)">space</button>
-<button class="sep-btn" data-sep="+" onclick="setSep(this)">+</button>
-</div>
-</div>
-<div class="option-item">
-<span class="option-label">Capitalize Words</span>
-<label class="toggle"><input type="checkbox" id="optCapitalize" checked onchange="generate()"><span class="toggle-slider"></span></label>
-</div>
-<div class="option-item">
-<span class="option-label">Add Number</span>
-<label class="toggle"><input type="checkbox" id="optAddNum" checked onchange="generate()"><span class="toggle-slider"></span></label>
-</div>
-</div>
-</div>
-</div>
-<button class="btn btn-block" onclick="generate()" style="margin-bottom:20px">&#x26a1; Generate Password</button>
-<div class="card">
-<div class="history-header">
-<div class="card-title" style="margin-bottom:0">&#x1f4dc; History</div>
-<button class="btn btn-sm btn-outline" onclick="clearHistory()">Clear All</button>
-</div>
-<div class="history-list" id="historyList">
-<div class="empty-state">No passwords generated yet</div>
-</div>
-</div>
-</main>
-<div class="toast" id="toast">Copied to clipboard!</div>
-<footer>
-<p>PassForge &mdash; All passwords are generated locally in your browser. Nothing is sent to any server.</p>
-</footer>
+<div class="toast" id="toast"></div>
+<footer><p>AI Password Generator &copy; 2026</p></footer>
 <script>
-const WORDS=["abandon","ability","able","about","above","absent","absorb","abstract","absurd","abuse","access","accident","account","accuse","achieve","acid","across","action","actor","actress","actual","adapt","add","addict","address","adjust","admit","adult","advance","advice","aerobic","affair","afford","afraid","again","age","agent","agree","ahead","aim","air","airport","aisle","alarm","album","alcohol","alert","alien","allow","almost","alone","alpha","already","also","alter","always","amateur","amazing","among","amount","amused","analyst","anchor","ancient","anger","angle","angry","animal","ankle","announce","annual","another","answer","antenna","antique","anxiety","any","apart","apology","appear","apple","approve","april","arch","arctic","area","arena","argue","arm","armed","armor","army","around","arrange","arrest","arrive","arrow","art","artefact","artist","artwork","ask","aspect","assault","asset","assist","assume","asthma","athlete","atom","attack","attend","attitude","attract","auction","audit","august","aunt","author","auto","autumn","average","avocado","avoid","awake","aware","awesome","awful","awkward","axis","baby","bachelor","bacon","badge","bag","balance","balcony","ball","bamboo","banana","banner","bar","barely","bargain","barrel","base","basic","basket","battle","beach","bean","beauty","because","become","beef","before","begin","behave","behind","believe","below","belt","bench","benefit","best","betray","better","between","beyond","bicycle","bid","bike","bind","biology","bird","birth","bitter","black","blade","blame","blanket","blast","bleak","bless","blind","blood","blossom","blow","blue","blur","blush","board","boat","body","boil","bomb","bone","bonus","book","boost","border","boring","borrow","boss","bottom","bounce","box","boy","bracket","brain","brand","brass","brave","bread","breeze","brick","bridge","brief","bright","bring","brisk","broken","bronze","broom","brother","brown","brush","bubble","buddy","budget","buffalo","build","bulb","bulk","bullet","bundle","bunny","burden","burger","burst","bus","business","busy","butter","buyer","buzz","cabbage","cabin","cable","cactus","cage","cake","call","calm","camera","camp","can","canal","cancel","candy","cannon","canoe","canvas","canyon","capable","capital","captain","car","carbon","card","cargo","carpet","carry","cart","case","cash","casino","castle","casual","cat","catalog","catch","category","cattle","caught","cause","caution","cave","ceiling","celery","cement","census","century","cereal","certain","chair","chalk","champion","change","chaos","chapter","charge","chase","cheap","check","cheese","cherry","chest","chicken","chief","child","chimney","choice","choose","chunk","churn","citizen","city","civil","claim","clap","clarify","claw","clay","clean","clerk","clever","click","client","cliff","climb","clinic","clip","clock","close","cloth","cloud","clown","club","clump","cluster","clutch","coach","coast","coconut","code","coffee","coil","coin","collect","color","column","combine","come","comfort","comic","common","company","concert","conduct","confirm","congress","connect","consider","control","convince","cook","cool","copper","copy","coral","core","corn","correct","cost","cotton","couch","country","couple","course","cousin","cover","coyote","crack","cradle","craft","cram","crane","crash","crater","crawl","crazy","cream","credit","creek","crew","cricket","crime","crisp","critic","crop","cross","crouch","crowd","crucial","cruel","cruise","crumble","crush","cry","crystal","cube","culture","cup","cupboard","curious","current","curtain","curve","cushion","custom","cute","cycle","dad","damage","damp","dance","danger","daring","dash","daughter","dawn","day","deal","debate","debris","decade","december","decide","decline","decorate","decrease","deer","defense","define","defy","degree","delay","deliver","demand","demise","denial","dentist","deny","depart","depend","deposit","depth","deputy","derive","describe","desert","design","desk","despair","destroy","detail","detect","develop","device","devote","diagram","dial","diamond","diary","dice","diesel","diet","differ","digital","dignity","dilemma","dinner","dinosaur","direct","dirt","disagree","discover","disease","dish","dismiss","disorder","display","distance","divert","divide","divorce","dizzy","doctor","document","dog","doll","dolphin","domain","donate","donkey","donor","door","dose","double","dove","draft","dragon","drama","drastic","draw","dream","dress","drift","drill","drink","drip","drive","drop","drum","dry","duck","dumb","dune","during","dust","dutch","duty","dwarf","dynamic","eager","eagle","early","earn","earth","easily","east","easy","echo","ecology","economy","edge","edit","educate","effort","egg","eight","either","elbow","elder","electric","elegant","element","elephant","elevator","elite","else","embark","embody","embrace","emerge","emotion","employ","empower","empty","enable","encourage","end","endless","endorse","enemy","energy","enforce","engage","engine","enhance","enjoy","enlist","enough","enrich","enroll","ensure","enter","entire","entry","envelope","episode","equal","equip","era","erase","erode","erosion","error","erupt","escape","essay","essence","estate","eternal","ethics","evidence","evil","evolve","exact","example","excess","exchange","excite","exclude","excuse","execute","exercise","exhaust","exhibit","exile","exist","exit","exotic","expand","expect","expire","explain","expose","express","extend","extra","eye","eyebrow","fabric","face","faculty","fade","faint","faith","fall","false","fame","family","famous","fan","fancy","fantasy","farm","fashion","fat","fatal","father","fatigue","fault","favorite","feature","february","federal","fee","feed","feel","female","fence","festival","fetch","fever","few","fiber","fiction","field","figure","file","film","filter","final","find","fine","finger","finish","fire","firm","fiscal","fish","fit","fitness","fix","flag","flame","flash","flat","flavor","flee","flight","flip","float","flock","floor","flower","fluid","flush","fly","foam","focus","fog","foil","fold","follow","food","foot","force","forest","forget","fork","fortune","forum","forward","fossil","foster","found","fox","fragile","frame","frequent","fresh","friend","fringe","frog","front","frost","frown","frozen","fruit","fuel","fun","funny","furnace","fury","future","gadget","gain","galaxy","gallery","game","gap","garage","garbage","garden","garlic","garment","gas","gasp","gate","gather","gauge","gaze","general","genius","genre","gentle","genuine","gesture","ghost","giant","gift","giggle","ginger","giraffe","girl","give","glad","glance","glare","glass","glide","glimpse","globe","gloom","glory","glove","glow","glue","goat","goddess","gold","good","goose","gorilla","gospel","gossip","govern","gown","grab","grace","grain","grant","grape","grass","gravity","great","green","grid","grief","grit","grocery","group","grow","grunt","guard","guess","guide","guilt","guitar","gun","gym","habit","hair","half","hammer","hamster","hand","happy","harbor","hard","harsh","harvest","hat","have","hawk","hazard","head","health","heart","heavy","hedgehog","height","hello","helmet","help","hen","hero","hip","hire","history","hobby","hockey","hold","hole","holiday","hollow","home","honey","hood","hope","horn","horror","horse","hospital","host","hotel","hour","hover","hub","huge","human","humble","humor","hundred","hungry","hunt","hurdle","hurry","hurt","husband","hybrid","ice","icon","idea","identify","idle","ignore","ill","illegal","illness","image","imitate","immense","immune","impact","impose","improve","impulse","inch","include","income","increase","index","indicate","indoor","industry","infant","inflict","inform","initial","inject","inmate","inner","innocent","input","inquiry","insane","insect","inside","inspire","install","intact","interest","into","invest","invite","involve","iron","island","isolate","issue","item","ivory","jacket","jaguar","jar","jazz","jealous","jeans","jelly","jewel","job","join","joke","journey","joy","judge","juice","jump","jungle","junior","junk","just","kangaroo","keen","keep","ketchup","key","kick","kid","kidney","kind","kingdom","kiss","kit","kitchen","kite","kitten","kiwi","knee","knife","knock","know","lab","label","labor","ladder","lady","lake","lamp","language","laptop","large","later","latin","laugh","laundry","lava","law","lawn","lawsuit","layer","lazy","leader","leaf","learn","leave","lecture","left","leg","legal","legend","leisure","lemon","lend","length","lens","leopard","lesson","letter","level","liberty","library","license","life","lift","light","like","limb","limit","link","lion","liquid","list","little","live","lizard","load","loan","lobster","local","lock","logic","lonely","long","loop","lottery","loud","lounge","love","loyal","lucky","luggage","lumber","lunar","lunch","luxury","lyrics","machine","mad","magic","magnet","maid","mail","main","major","make","mammal","man","manage","mandate","mango","mansion","manual","maple","marble","march","margin","marine","market","marriage","mask","mass","master","match","material","math","matrix","matter","maximum","maze","meadow","mean","measure","meat","mechanic","medal","media","melody","melt","member","memory","mention","menu","mercy","merge","merit","merry","mesh","message","metal","method","middle","midnight","milk","million","mimic","mind","minimum","minor","minute","miracle","mirror","misery","miss","mistake","mix","mixed","mixture","mobile","model","modify","mom","moment","monitor","monkey","monster","month","moon","moral","more","morning","mosquito","mother","motion","motor","mountain","mouse","move","movie","much","muffin","mule","multiply","muscle","museum","mushroom","music","must","mutual","myself","mystery","myth","naive","name","napkin","narrow","nasty","nation","nature","near","neck","need","negative","neglect","neither","nephew","nerve","nest","net","network","neutral","never","news","next","nice","night","noble","noise","nominee","noodle","normal","north","nose","notable","nothing","notice","novel","now","nuclear","number","nurse","nut","oak","obey","object","oblige","obscure","observe","obtain","obvious","occur","ocean","october","odor","off","offer","office","often","oil","okay","old","olive","olympic","omit","once","one","onion","online","only","open","opera","opinion","oppose","option","orange","orbit","orchard","order","ordinary","organ","orient","original","orphan","ostrich","other","outdoor","outer","output","outside","oval","oven","over","own","owner","oxygen","oyster","ozone","pact","paddle","page","pair","palace","palm","panda","panel","panic","panther","paper","parade","parent","park","parrot","party","pass","patch","path","patient","patrol","pattern","pause","pave","payment","peace","peanut","pear","peasant","pelican","pen","penalty","pencil","people","pepper","perfect","permit","person","pet","phone","photo","phrase","physical","piano","picnic","picture","piece","pig","pigeon","pill","pilot","pink","pioneer","pipe","pistol","pitch","pizza","place","planet","plastic","plate","play","please","pledge","pluck","plug","plunge","poem","poet","point","polar","pole","police","pond","pony","pool","popular","portion","pose","position","possible","post","potato","pottery","poverty","powder","power","practice","praise","predict","prefer","prepare","present","pretty","prevent","price","pride","primary","print","priority","prison","private","prize","problem","process","produce","profit","program","project","promote","proof","property","prosper","protect","proud","provide","public","pudding","pull","pulp","pulse","pumpkin","punch","pupil","puppy","purchase","purity","purpose","purse","push","put","puzzle","pyramid","quality","quantum","quarter","question","quick","quit","quiz","quote","rabbit","raccoon","race","rack","radar","radio","rage","rail","rain","raise","rally","ramp","ranch","random","range","rapid","rare","rate","rather","raven","raw","razor","ready","real","reason","rebel","rebuild","recall","receive","recipe","record","recycle","reduce","reflect","reform","region","regret","regular","reject","relax","release","relief","rely","remain","remember","remind","remove","render","renew","rent","reopen","repair","repeat","replace","report","require","rescue","resemble","resist","resource","response","result","retire","retreat","return","reunion","reveal","review","reward","rhythm","rib","ribbon","rice","rich","ride","ridge","rifle","right","rigid","ring","riot","ripple","risk","ritual","rival","river","road","roast","robot","robust","rocket","romance","roof","rookie","room","rose","rotate","rough","round","route","royal","rubber","rude","rug","rule","run","runway","rural","sad","saddle","sadness","safe","sail","salad","salmon","salon","salt","salute","same","sample","sand","satisfy","satoshi","sauce","sausage","save","say","scale","scan","scare","scatter","scene","scheme","school","science","scissors","scorpion","scout","scrap","screen","script","scrub","sea","search","season","seat","second","secret","section","security","seed","seek","segment","select","sell","seminar","senior","sense","sentence","series","service","session","settle","setup","seven","shadow","shaft","shallow","share","shed","shell","sheriff","shield","shift","shine","ship","shiver","shock","shoe","shoot","shop","short","shoulder","shove","shrimp","shrug","shuffle","shy","sibling","sick","side","siege","sight","sign","silent","silk","silly","silver","similar","simple","since","sing","siren","sister","situate","six","size","skate","sketch","ski","skill","skin","skirt","skull","slab","slam","sleep","slender","slice","slide","slight","slim","slogan","slot","slow","slush","small","smart","smile","smoke","smooth","snack","snake","snap","sniff","snow","soap","soccer","social","sock","soda","soft","solar","soldier","solid","solution","solve","someone","song","soon","sorry","sort","soul","sound","soup","source","south","space","spare","spatial","spawn","speak","special","speed","spell","spend","sphere","spice","spider","spike","spin","spirit","split","sponsor","spoon","sport","spot","spray","spread","spring","spy","square","squeeze","squirrel","stable","stadium","staff","stage","stairs","stamp","stand","start","state","stay","steak","steel","stem","step","stereo","stick","still","sting","stock","stomach","stone","stool","story","stove","strategy","street","strike","strong","struggle","student","stuff","stumble","style","subject","submit","subway","success","such","sudden","suffer","sugar","suggest","suit","summer","sun","sunny","sunset","super","supply","supreme","sure","surface","surge","surprise","surround","survey","suspect","sustain","swallow","swamp","swap","swarm","swear","sweet","swim","swing","switch","sword","symbol","symptom","syrup","system","table","tackle","tag","tail","talent","talk","tank","tape","target","task","taste","tattoo","taxi","teach","team","tell","ten","tenant","tennis","tent","term","test","text","thank","that","theme","then","theory","there","they","thing","this","thought","three","thrive","throw","thumb","thunder","ticket","tide","tiger","tilt","timber","time","tiny","tip","tired","tissue","title","toast","tobacco","today","toddler","toe","together","toilet","token","tomato","tomorrow","tone","tongue","tonight","tool","tooth","top","topic","topple","torch","tornado","tortoise","toss","total","tourist","toward","tower","town","toy","track","trade","traffic","tragic","train","transfer","trap","trash","travel","tray","treat","tree","trend","trial","tribe","trick","trigger","trim","trip","trophy","trouble","truck","true","truly","trumpet","trust","truth","try","tube","tuna","tunnel","turkey","turn","turtle","twelve","twenty","twice","twin","twist","two","type","typical","ugly","umbrella","unable","unaware","uncle","uncover","under","undo","unfair","unfold","unhappy","uniform","union","unique","unit","universe","unknown","unlock","until","unusual","unveil","update","upgrade","uphold","upon","upper","upset","urban","usage","use","used","useful","useless","usual","utility","vacant","vacuum","vague","valid","valley","valve","van","vanish","vapor","various","vast","vault","vehicle","velvet","vendor","venture","venue","verb","verify","version","very","vessel","veteran","viable","vibrant","vicious","victory","video","view","village","vintage","violin","virtual","virus","visa","visit","visual","vital","vivid","vocal","voice","void","volcano","volume","vote","voyage","wage","wagon","wait","walk","wall","walnut","want","warfare","warm","warrior","wash","wasp","waste","water","wave","way","wealth","weapon","wear","weasel","weather","web","wedding","weekend","weird","welcome","well","west","wet","whale","what","wheat","wheel","when","where","whip","whisper","wide","width","wife","wild","will","win","window","wine","wing","wink","winner","winter","wire","wisdom","wise","wish","witness","wolf","woman","wonder","wood","wool","word","work","world","worry","worth","wrap","wreck","wrestle","wrist","write","wrong","yard","year","yellow","you","young","youth","zebra","zero","zone","zoo"];
+(function(){
+var U='ABCDEFGHIJKLMNOPQRSTUVWXYZ',L='abcdefghijklmnopqrstuvwxyz',D='0123456789',S='!@#$%^&*()_+-=[]{}|;:,.<>?/~';
+var g=document.getElementById.bind(document);
+var lenR=g('lenRange'),lenN=g('lenNum'),lenV=g('lenVal');
+var cntR=g('countRange'),cntN=g('countNum');
+var uEl=g('upper'),lEl=g('lower'),dEl=g('digits'),sEl=g('symbols');
+var sFill=g('strengthFill'),sTxt=g('strengthText');
+var pwBox=g('passwords'),caBtn=g('copyAllBtn'),toast=g('toast');
+var pws=[];
 
-let mode='password', separator='-', history=JSON.parse(localStorage.getItem('pwHistory')||'[]');
-
-function getOpts(){
-  return {
-    length:parseInt(document.getElementById('lengthSlider').value),
-    upper:document.getElementById('optUpper').checked,
-    lower:document.getElementById('optLower').checked,
-    numbers:document.getElementById('optNumbers').checked,
-    symbols:document.getElementById('optSymbols').checked,
-    exclude:document.getElementById('optExclude').checked,
-    words:parseInt(document.getElementById('wordSlider').value),
-    capitalize:document.getElementById('optCapitalize').checked,
-    addNumber:document.getElementById('optAddNumber').checked
-  };
+function sp(r,n,lb){
+  r.oninput=function(){n.value=r.value;if(lb)lb.textContent=r.value;us()};
+  n.oninput=function(){var v=Math.max(+r.min,Math.min(+r.max,+n.value||+r.min));r.value=v;n.value=v;if(lb)lb.textContent=v;us()};
 }
+sp(lenR,lenN,lenV);
+sp(cntR,cntN,null);
 
-function secureRandom(max){
-  const arr=new Uint32Array(1);
-  crypto.getRandomValues(arr);
-  return arr[0]%max;
+[uEl,lEl,dEl,sEl].forEach(function(el){el.addEventListener('change',function(){
+  if(!uEl.checked&&!lEl.checked&&!dEl.checked&&!sEl.checked)el.checked=true;
+  us();
+})});
+
+function us(){
+  var len=+lenR.value,types=0,pool=0;
+  if(uEl.checked){types++;pool+=26}
+  if(lEl.checked){types++;pool+=26}
+  if(dEl.checked){types++;pool+=10}
+  if(sEl.checked){types++;pool+=28}
+  var bits=len*Math.log2(pool||1);
+  var lv,cl,w;
+  if(bits<40){lv=25;cl='#ff4444';w='Weak'}
+  else if(bits<60){lv=50;cl='#ffaa00';w='Medium'}
+  else if(bits<80){lv=75;cl='#44cc44';w='Strong'}
+  else{lv=100;cl='#00d2ff';w='Very Strong'}
+  sFill.style.width=lv+'%';
+  sFill.style.background=cl;
+  sTxt.style.color=cl;
+  sTxt.textContent=w+' (~'+Math.round(bits)+' bits)';
 }
+us();
 
-function generatePassword(){
-  const o=getOpts();
-  let chars='';
-  const upper='ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-  const lower='abcdefghijklmnopqrstuvwxyz';
-  const numbers='0123456789';
-  const symbols='!@#$%^&*()_+-=[]{}|;:,.<>?';
-  const similar='ilI1loO0';
-  if(o.upper) chars+=upper;
-  if(o.lower) chars+=lower;
-  if(o.numbers) chars+=numbers;
-  if(o.symbols) chars+=symbols;
-  if(!chars){chars=lower;document.getElementById('optLower').checked=true;}
-  if(o.exclude) chars=[...chars].filter(c=>!similar.includes(c)).join('');
-  let pw='';
-  const required=[];
-  if(o.upper) required.push(upper);
-  if(o.lower) required.push(lower);
-  if(o.numbers) required.push(numbers);
-  if(o.symbols) required.push(symbols);
-  for(const r of required){
-    let filtered=o.exclude?[...r].filter(c=>!similar.includes(c)).join(''):r;
-    if(filtered.length) pw+=filtered[secureRandom(filtered.length)];
+function gen(){
+  var len=+lenR.value,cnt=+cntR.value;
+  var cs='';
+  if(uEl.checked)cs+=U;
+  if(lEl.checked)cs+=L;
+  if(dEl.checked)cs+=D;
+  if(sEl.checked)cs+=S;
+  if(!cs)return;
+  pws=[];
+  for(var i=0;i<cnt;i++){
+    var arr=new Uint32Array(len);
+    crypto.getRandomValues(arr);
+    var pw='';
+    for(var j=0;j<len;j++)pw+=cs[arr[j]%cs.length];
+    pws.push(pw);
   }
-  while(pw.length<o.length) pw+=chars[secureRandom(chars.length)];
-  pw=[...pw].sort(()=>Math.random()-0.5).join('');
-  return pw;
+  render();
 }
 
-function generatePassphrase(){
-  const o=getOpts();
-  const words=[];
-  for(let i=0;i<o.words;i++){
-    let w=WORDS[secureRandom(WORDS.length)];
-    if(o.capitalize) w=w[0].toUpperCase()+w.slice(1);
-    words.push(w);
-  }
-  let phrase=words.join(separator);
-  if(o.addNumber) phrase+=separator+secureRandom(100);
-  return phrase;
+function render(){
+  pwBox.innerHTML='';
+  pws.forEach(function(pw,i){
+    var d=document.createElement('div');d.className='pw-item';
+    var c=document.createElement('code');c.textContent=pw;
+    var b=document.createElement('button');b.className='btn btn-sm';b.textContent='Copy';
+    b.onclick=function(){cp(pw)};
+    d.appendChild(c);d.appendChild(b);pwBox.appendChild(d);
+  });
+  caBtn.style.display=pws.length>1?'block':'none';
 }
 
-function calcEntropy(pw){
-  let pool=0;
-  if(/[a-z]/.test(pw)) pool+=26;
-  if(/[A-Z]/.test(pw)) pool+=26;
-  if(/[0-9]/.test(pw)) pool+=10;
-  if(/[^a-zA-Z0-9]/.test(pw)) pool+=32;
-  if(pool===0) return 0;
-  return Math.round(pw.length*Math.log2(pool));
-}
-
-function getStrength(entropy){
-  if(entropy<36) return {label:'Weak',color:'var(--danger)',pct:20};
-  if(entropy<60) return {label:'Fair',color:'var(--warn)',pct:45};
-  if(entropy<80) return {label:'Strong',color:'var(--accent)',pct:70};
-  return {label:'Very Strong',color:'var(--success)',pct:100};
-}
-
-function updateStrength(pw){
-  const entropy=calcEntropy(pw);
-  const s=getStrength(entropy);
-  const fill=document.getElementById('strengthFill');
-  fill.style.width=s.pct+'%';
-  fill.style.background=s.color;
-  document.getElementById('strengthLabel').textContent=s.label;
-  document.getElementById('strengthLabel').style.color=s.color;
-  document.getElementById('entropyBadge').textContent=entropy+' bits';
-}
-
-function generate(){
-  const pw=mode==='password'?generatePassword():generatePassphrase();
-  document.getElementById('pwText').textContent=pw;
-  updateStrength(pw);
-  addToHistory(pw);
-}
-
-function copyPassword(){
-  const pw=document.getElementById('pwText').textContent;
-  if(!pw||pw.startsWith('Click Generate')) return;
-  navigator.clipboard.writeText(pw).then(()=>{
-    const btn=document.getElementById('copyBtn');
-    btn.classList.add('copied');
-    btn.innerHTML='&#x2705;';
-    showToast('Copied to clipboard!');
-    setTimeout(()=>{btn.classList.remove('copied');btn.innerHTML='&#x1f4cb;';},1500);
+function cp(t){
+  navigator.clipboard.writeText(t).then(function(){show('Copied!')}).catch(function(){
+    var ta=document.createElement('textarea');ta.value=t;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);show('Copied!');
   });
 }
 
-function showToast(msg){
-  const t=document.getElementById('toast');
-  t.textContent=msg;
-  t.classList.add('show');
-  setTimeout(()=>t.classList.remove('show'),2000);
+function show(m){
+  toast.textContent=m;toast.classList.add('show');
+  setTimeout(function(){toast.classList.remove('show')},1500);
 }
 
-function setMode(m){
-  mode=m;
-  document.getElementById('tabPassword').classList.toggle('active',m==='password');
-  document.getElementById('tabPassphrase').classList.toggle('active',m==='passphrase');
-  document.getElementById('passwordOpts').classList.toggle('hide',m!=='password');
-  document.getElementById('passphraseOpts').classList.toggle('active',m==='passphrase');
-  generate();
-}
-
-function updateLength(v){document.getElementById('lengthVal').textContent=v;generate();}
-function updateWords(v){document.getElementById('wordVal').textContent=v;generate();}
-
-function setSep(el){
-  document.querySelectorAll('.sep-btn').forEach(b=>b.classList.remove('active'));
-  el.classList.add('active');
-  separator=el.dataset.sep;
-  generate();
-}
-
-function addToHistory(pw){
-  const entry={pw,time:Date.now(),mode};
-  history.unshift(entry);
-  if(history.length>50) history=history.slice(0,50);
-  localStorage.setItem('pwHistory',JSON.stringify(history));
-  renderHistory();
-}
-
-function renderHistory(){
-  const list=document.getElementById('historyList');
-  if(!history.length){list.innerHTML='<div class="empty-state">No passwords generated yet</div>';return;}
-  list.innerHTML=history.map((h,i)=>{
-    const d=new Date(h.time);
-    const time=d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
-    return '<div class="history-item"><span class="history-pw">'+escHtml(h.pw)+'</span><span class="history-meta">'+time+'</span><div class="history-actions"><button class="icon-btn-sm" onclick="copyHistoryItem('+i+')" title="Copy">&#x1f4cb;</button></div></div>';
-  }).join('');
-}
-
-function escHtml(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
-
-function copyHistoryItem(i){
-  navigator.clipboard.writeText(history[i].pw).then(()=>showToast('Copied to clipboard!'));
-}
-
-function clearHistory(){
-  history=[];
-  localStorage.removeItem('pwHistory');
-  renderHistory();
-}
-
-renderHistory();
-generate();
-
-// Pro upgrade modal
-function showUpgradeModal(){
-  document.getElementById('upgradeModal').classList.add('show');
-  document.body.style.overflow='hidden';
-}
-function hideUpgradeModal(e){
-  if(e && e.target!==e.currentTarget) return;
-  document.getElementById('upgradeModal').classList.remove('show');
-  document.body.style.overflow='';
-}
-document.addEventListener('keydown',function(e){
-  if(e.key==='Escape') hideUpgradeModal();
-});
+g('genBtn').onclick=gen;
+caBtn.onclick=function(){cp(pws.join('\n'))};
+gen();
+})();
 </script>
-<!-- Pro Features Section -->
-<div class="pro-section" style="max-width:900px;margin:0 auto;padding:0 20px 40px">
-<div class="pro-title">🚀 Advanced Tools <span class="pro-badge">PRO</span></div>
-<div class="pro-cards">
-<div class="pro-card" onclick="showUpgradeModal()">
-<div class="pro-card-inner">
-<div class="pro-card-label">🔍 Password Strength Audit</div>
-<div class="pro-mock">
-<div class="pro-mock-row"><span>Overall Score</span><div class="pro-mock-bar"><div class="pro-mock-fill" style="width:72%;background:linear-gradient(90deg,var(--warn),var(--success))"></div></div><span>72/100</span></div>
-<div class="pro-mock-row"><span>Brute Force</span><div class="pro-mock-bar"><div class="pro-mock-fill" style="width:85%;background:var(--success)"></div></div><span>3.2 yrs</span></div>
-<div class="pro-mock-row"><span>Dictionary</span><div class="pro-mock-bar"><div class="pro-mock-fill" style="width:40%;background:var(--warn)"></div></div><span>Medium</span></div>
-<div style="margin-top:10px">
-<span class="pro-mock-tag">⚠️ Common pattern</span>
-<span class="pro-mock-tag">✓ Good length</span>
-<span class="pro-mock-tag">⚠️ Keyboard walk</span>
-<span class="pro-mock-tag">✓ Mixed case</span>
-</div>
-</div>
-</div>
-<div class="pro-overlay"><span class="pro-lock">🔒</span><span class="pro-lock-text">Unlock with Pro</span></div>
-</div>
-<div class="pro-card" onclick="showUpgradeModal()">
-<div class="pro-card-inner">
-<div class="pro-card-label">🛡️ Breach Check</div>
-<div class="pro-mock">
-<div class="pro-mock-result"><div class="pro-mock-dot" style="background:var(--success)"></div>myS3cur3Pass! — No breaches found</div>
-<div class="pro-mock-result"><div class="pro-mock-dot" style="background:var(--danger)"></div>password123 — Found in 12,483 breaches</div>
-<div class="pro-mock-result"><div class="pro-mock-dot" style="background:var(--warn)"></div>Welcome2024 — Found in 3 breaches</div>
-<div style="margin-top:10px;font-size:.75rem;color:var(--text2);display:flex;align-items:center;gap:6px">
-<span>🔗</span> Powered by Have I Been Pwned API
-</div>
-</div>
-</div>
-<div class="pro-overlay"><span class="pro-lock">🔒</span><span class="pro-lock-text">Unlock with Pro</span></div>
-</div>
-</div>
-</div>
-
-<!-- Upgrade Modal -->
-<div class="upgrade-modal-bg" id="upgradeModal" onclick="hideUpgradeModal(event)">
-<div class="upgrade-modal" onclick="event.stopPropagation()">
-<h3>Upgrade to Pro</h3>
-<div class="price">$9</div>
-<p style="color:var(--text2);font-size:.9rem">One-time payment. Lifetime access.</p>
-<div class="upgrade-features">
-<div class="upgrade-feature"><span>🔍</span><span>Password Strength Audit — deep analysis with pattern detection, dictionary attack risk, and brute force time estimation</span></div>
-<div class="upgrade-feature"><span>🛡️</span><span>Breach Check — verify if your passwords appeared in known data breaches (Have I Been Pwned integration)</span></div>
-<div class="upgrade-feature"><span>🔄</span><span>Lifetime updates — all future Pro features included</span></div>
-</div>
-<a href="https://feifeicch.gumroad.com/ai-password-generator" target="_blank" class="btn-upgrade">Upgrade to Pro — $9</a>
-<button class="btn-later" onclick="hideUpgradeModal()">Maybe later</button>
-</div>
-</div>
-
-<!-- MONETIZE:START -->
-<script src="monetize.js"></script>
-<!-- MONETIZE:END -->
+<script src="https://alwingulla.com/88/tag.min.js" data-zone="130647" async data-cfasync="false"></script>
 </body>
 </html>
