@@ -71,6 +71,87 @@ footer a{color:#7b2ff7;text-decoration:none}
 </div>
 </div>
 <div class="toast" id="toast"></div>
+<!-- Pro Features Section -->
+<style>
+.pro-section{position:relative;max-width:600px;margin:30px auto;cursor:pointer;border-radius:12px;overflow:hidden;border:1px solid #0f3460}
+.pro-blur{filter:blur(4px);opacity:.7;padding:24px;background:#16213e;pointer-events:none;user-select:none}
+.pro-blur h3{color:#7b2ff7;font-size:1rem;margin-bottom:12px}
+.pro-blur .mock-vault{margin-bottom:14px}
+.pro-blur .mock-vrow{display:flex;align-items:center;gap:10px;padding:10px 12px;background:#0f3460;border-radius:8px;margin-bottom:6px;font-size:.82rem}
+.pro-blur .mock-vrow .v-icon{font-size:1.2rem}
+.pro-blur .mock-vrow .v-site{color:#00d2ff;flex:1}
+.pro-blur .mock-vrow .v-pw{color:#666;font-family:monospace;font-size:.75rem}
+.pro-blur .mock-breach{background:#0f3460;border-radius:8px;padding:12px;margin-bottom:14px}
+.pro-blur .mock-brow{display:flex;align-items:center;gap:8px;padding:4px 0;font-size:.8rem;color:#888}
+.pro-blur .mock-brow .b-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.pro-blur .mock-brow .b-safe{background:#4ecca3}
+.pro-blur .mock-brow .b-warn{background:#e94560}
+.pro-blur .mock-team{display:flex;gap:8px;flex-wrap:wrap}
+.pro-blur .mock-member{display:flex;align-items:center;gap:6px;padding:6px 12px;background:#0f3460;border-radius:20px;font-size:.78rem;color:#888}
+.pro-overlay{position:absolute;top:0;left:0;width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(0,0,0,.45);backdrop-filter:blur(2px);z-index:2;transition:background .2s}
+.pro-overlay:hover{background:rgba(0,0,0,.55)}
+.pro-lock{font-size:2.5rem;margin-bottom:8px}
+.pro-label{color:#fff;font-size:1.15rem;font-weight:700;text-shadow:0 2px 8px rgba(0,0,0,.5)}
+.pro-sublabel{color:rgba(255,255,255,.7);font-size:.85rem;margin-top:4px}
+.pro-modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);z-index:9999;align-items:center;justify-content:center;padding:20px}
+.pro-modal-box{background:#16213e;border:1px solid #0f3460;border-radius:16px;padding:32px;max-width:420px;width:100%;text-align:center;animation:proFadeIn .3s}
+@keyframes proFadeIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.pro-modal-box h3{font-size:1.3rem;color:#fff;margin-bottom:4px}
+.pro-modal-box .pro-price{font-size:2rem;font-weight:800;color:#7b2ff7;margin:12px 0}
+.pro-modal-box .pro-desc{color:#888;font-size:.85rem;margin-bottom:8px}
+.pro-modal-box ul{text-align:left;list-style:none;margin:16px 0;padding:0}
+.pro-modal-box ul li{padding:8px 0;border-bottom:1px solid #0f3460;font-size:.9rem;color:#ccc}
+.pro-modal-box ul li:last-child{border-bottom:none}
+.pro-modal-box ul li::before{content:'✓ ';color:#7b2ff7;font-weight:700}
+.pro-btn{display:block;width:100%;padding:14px;background:linear-gradient(135deg,#7b2ff7,#00d2ff);color:#fff;text-decoration:none;border-radius:10px;font-size:1.05rem;font-weight:700;margin-top:16px;transition:opacity .2s;text-align:center}
+.pro-btn:hover{opacity:.9}
+.pro-close{background:none;border:none;color:#888;font-size:.9rem;margin-top:12px;cursor:pointer;padding:8px}
+.pro-close:hover{color:#fff}
+</style>
+<div class="pro-section" onclick="document.getElementById('proModal').style.display='flex'">
+<div class="pro-blur">
+<h3>🗄️ Password Manager</h3>
+<div class="mock-vault">
+<div class="mock-vrow"><span class="v-icon">🌐</span><span class="v-site">github.com</span><span class="v-pw">••••••••••••</span></div>
+<div class="mock-vrow"><span class="v-icon">📧</span><span class="v-site">gmail.com</span><span class="v-pw">••••••••••••</span></div>
+<div class="mock-vrow"><span class="v-icon">☁️</span><span class="v-site">aws.amazon.com</span><span class="v-pw">••••••••••••</span></div>
+<div class="mock-vrow"><span class="v-icon">💬</span><span class="v-site">slack.com</span><span class="v-pw">••••••••••••</span></div>
+</div>
+<h3>🔍 Breach Detection</h3>
+<div class="mock-breach">
+<div class="mock-brow"><span class="b-dot b-safe"></span> github.com — No breaches found</div>
+<div class="mock-brow"><span class="b-dot b-warn"></span> linkedin.com — Found in 2 breaches</div>
+<div class="mock-brow"><span class="b-dot b-safe"></span> gmail.com — No breaches found</div>
+</div>
+<h3>👥 Team Sharing</h3>
+<div class="mock-team">
+<span class="mock-member">👤 Alice (Admin)</span>
+<span class="mock-member">👤 Bob (Editor)</span>
+<span class="mock-member">👤 Carol (Viewer)</span>
+<span class="mock-member">+ Invite</span>
+</div>
+</div>
+<div class="pro-overlay">
+<div class="pro-lock">🔒</div>
+<div class="pro-label">Pro Features</div>
+<div class="pro-sublabel">Click to unlock password vault, breach detection & team sharing</div>
+</div>
+</div>
+<div id="proModal" class="pro-modal" onclick="if(event.target===this)this.style.display='none'">
+<div class="pro-modal-box">
+<h3>⚡ Password Generator Pro</h3>
+<div class="pro-desc">Complete password security suite</div>
+<div class="pro-price">$14</div>
+<ul>
+<li>Password Manager — encrypted vault to store & organize all passwords</li>
+<li>Breach Detection — check if your credentials appeared in data breaches</li>
+<li>Team Sharing — securely share passwords with role-based access control</li>
+<li>Priority support & lifetime updates</li>
+</ul>
+<a href="https://feifeicch.gumroad.com/l/ai-password-generator-pro" target="_blank" class="pro-btn">Upgrade to Pro — $14</a>
+<button class="pro-close" onclick="event.stopPropagation();document.getElementById('proModal').style.display='none'">Maybe later</button>
+</div>
+</div>
 <footer><p>AI Password Generator &copy; 2026</p></footer>
 <script>
 (function(){
